@@ -1,0 +1,39 @@
+# Default configuration for Email Signature Generator
+signature:
+  dimensions:
+    logo_height: 70
+    margin: 15
+    logo_margin_right: 20
+    line_height: 22
+  
+  outline:
+    name_width: 2
+    text_width: 1
+  
+  colors:
+    outline: [255, 255, 255]
+    name: [51, 51, 51]
+    details: [100, 100, 100]
+    separator: [200, 0, 40, 200]
+    confidentiality: [150, 150, 150]
+  
+  fonts:
+    linux:
+      - "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+      - "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    windows:
+      - "C:\\Windows\\Fonts\\arialbd.ttf"
+      - "C:\\Windows\\Fonts\\arial.ttf"
+    macos:
+      - "/System/Library/Fonts/Helvetica.ttc"
+      - "/System/Library/Fonts/HelveticaNeue.ttc"
+  
+  logo:
+    search_paths:
+      - "logo.png"
+      - "logo.jpg"
+      - "./logo/logo.png"
+      - "./logo/logo.jpg"
+  
+  text:
+    confidentiality: "CONFIDENCIALIDADE: Esta mensagem e qualquer ficheiro anexado destina-se exclusivamente ao uso do destinatário e podem conter informações confidenciais."

@@ -1,0 +1,57 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+venv/
+env/
+
+# Kiro AI assistant directory
+.kiro/
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.hypothesis/
+*.cover
+.tox/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Linting
+.ruff_cache/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Generated signature files (examples can be committed separately)
+email_signature.png
+email_signature_*.png
+
+# User-specific profiles (optional - remove if you want to commit profiles)
+profiles/*.json
+
+# Configuration overrides (keep default_config.yaml)
+config/local_config.yaml
+config/user_config.yaml
+
+# Logs
+*.log
+
+# OS-specific files
+Thumbs.db
+.DS_Store

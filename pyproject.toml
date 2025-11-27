@@ -1,0 +1,75 @@
+[project]
+name = "email-signature-generator"
+version = "0.1.0"
+description = "Professional email signature generator with transparent backgrounds and outlined text"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pillow>=12.0.0",
+    "pyyaml>=6.0.0",
+    # Note: tkinter is required for GUI but is included with Python standard library
+    # If tkinter is not available, install it via your system package manager:
+    # - Ubuntu/Debian: sudo apt-get install python3-tk
+    # - Fedora: sudo dnf install python3-tkinter
+    # - macOS: included with Python from python.org or Homebrew
+    # - Windows: included with standard Python installation
+]
+
+[project.scripts]
+email-signature = "main:main"
+email-signature-gui = "gui_main:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "hypothesis>=6.0.0",
+    "black>=24.0.0",
+    "mypy>=1.8.0",
+    "ruff>=0.2.0",
+    "types-pyyaml>=6.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--verbose",
+    "--cov=src/email_signature",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--strict-markers",
+]
+markers = [
+    "windows: marks tests as Windows-specific (deselect with '-m \"not windows\"')",
+    "macos: marks tests as macOS-specific (deselect with '-m \"not macos\"')",
+    "linux: marks tests as Linux-specific (deselect with '-m \"not linux\"')",
+    "gui: marks tests that require GUI/display (deselect with '-m \"not gui\"')",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py313"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = []
