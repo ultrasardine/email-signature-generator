@@ -344,7 +344,7 @@ The application will prompt you for:
 - Phone number (landline)
 - Mobile number
 - Email address
-- Website (optional, defaults to www.eos.pt)
+- Website (optional, defaults to www.example.com)
 
 The generated signature will be saved as `email_signature.png` in the current directory.
 

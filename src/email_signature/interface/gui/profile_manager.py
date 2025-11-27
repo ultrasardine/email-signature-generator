@@ -107,7 +107,7 @@ class ProfileManager:
             phone=profile_data.get("phone", ""),
             mobile=profile_data.get("mobile", ""),
             email=profile_data["email"],
-            website=profile_data.get("website", "www.eos.pt"),
+            website=profile_data.get("website", "www.example.com"),
         )
 
     def list_profiles(self) -> List[str]:

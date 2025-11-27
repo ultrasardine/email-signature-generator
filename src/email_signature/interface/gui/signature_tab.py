@@ -140,7 +140,7 @@ class SignatureTab(ValidationMixin):
             var.trace_add("write", lambda *args, fn=field_name: self._on_field_change(fn))
         
         # Set default value for website
-        self.field_vars["website"].set("www.eos.pt")
+        self.field_vars["website"].set("www.example.com")
         
         logger.debug("Form fields created")
     

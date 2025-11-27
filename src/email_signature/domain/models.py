@@ -14,7 +14,7 @@ class SignatureData:
         phone: Landline phone number (optional)
         mobile: Mobile phone number (optional)
         email: Email address (required)
-        website: Company website (defaults to "www.eos.pt")
+        website: Company website (defaults to "www.example.com")
     """
 
     name: str
@@ -23,7 +23,7 @@ class SignatureData:
     phone: str
     mobile: str
     email: str
-    website: str = "www.eos.pt"
+    website: str = "www.example.com"
 
     def __post_init__(self) -> None:
         """Validate data after initialization."""
