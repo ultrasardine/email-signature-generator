@@ -37,9 +37,9 @@ _Record any issues here_
 1. Enter valid data in each field:
    - Name: "John Doe"
    - Position: "Software Engineer"
-   - Address: "Lisbon, Portugal"
-   - Phone: "+351 21 123 4567"
-   - Mobile: "+351 91 234 5678"
+   - Address: "Anytown, USA"
+   - Phone: "+1 555 0100"
+   - Mobile: "+1 555 0101"
    - Email: "john.doe@example.com"
    - Website: "www.example.com"
 
@@ -72,7 +72,7 @@ _Record any issues here_
 
 ### Steps (continued):
 5. Correct the email to "valid@example.com"
-6. Correct the phone to "+351 21 123 4567"
+6. Correct the phone to "+1 555 0100"
 
 ### Expected Results:
 - [ ] Error indicators disappear

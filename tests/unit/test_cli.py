@@ -23,10 +23,10 @@ def test_collect_user_data_with_valid_inputs() -> None:
     user_inputs = [
         "John Doe",  # name
         "Software Engineer",  # position
-        "123 Main St, Lisbon",  # address
+        "123 Main St, Anytown, USA",  # address
         "john.doe@example.com",  # email
-        "912345678",  # phone
-        "913456789",  # mobile
+        "900000001",  # phone (fictional 9-digit format)
+        "900000002",  # mobile (fictional 9-digit format)
         "www.example.com",  # website
     ]
 
@@ -38,10 +38,10 @@ def test_collect_user_data_with_valid_inputs() -> None:
     assert isinstance(result, SignatureData)
     assert result.name == "John Doe"
     assert result.position == "Software Engineer"
-    assert result.address == "123 Main St, Lisbon"
+    assert result.address == "123 Main St, Anytown, USA"
     assert result.email == "john.doe@example.com"
-    assert result.phone == "912345678"
-    assert result.mobile == "913456789"
+    assert result.phone == "900000001"
+    assert result.mobile == "900000002"
     assert result.website == "www.example.com"
 
 
@@ -61,10 +61,10 @@ def test_collect_user_data_with_default_website() -> None:
     user_inputs = [
         "Jane Smith",
         "Product Manager",
-        "456 Oak Ave, Porto",
+        "456 Oak Ave, Springfield, USA",
         "jane@example.com",
-        "911111111",
-        "922222222",
+        "900000003",
+        "900000004",
         "",  # empty website - should use default
     ]
 
@@ -92,7 +92,7 @@ def test_collect_user_data_with_optional_fields_empty() -> None:
     user_inputs = [
         "Alice Johnson",
         "Designer",
-        "789 Pine Rd, Faro",
+        "789 Pine Rd, Riverside, USA",
         "alice@example.com",
         "",  # empty phone (optional)
         "",  # empty mobile (optional)
@@ -127,11 +127,11 @@ def test_validation_error_handling_and_reentry() -> None:
         "Bob Wilson",
         "",  # invalid position (empty)
         "Senior Developer",  # valid position (retry)
-        "321 Elm St, Braga",
+        "321 Elm St, Lakeside, USA",
         "invalid-email",  # invalid email (no @)
         "bob@example.com",  # valid email (retry)
         "12345",  # invalid phone (wrong format)
-        "913333333",  # valid phone (retry)
+        "900000005",  # valid phone (retry)
         "",  # empty mobile (valid - optional)
         "",  # empty website (will use default)
     ]
@@ -145,7 +145,7 @@ def test_validation_error_handling_and_reentry() -> None:
     assert result.name == "Bob Wilson"
     assert result.position == "Senior Developer"
     assert result.email == "bob@example.com"
-    assert result.phone == "913333333"
+    assert result.phone == "900000005"
 
     # And error messages should have been displayed
     print_calls = [str(call) for call in mock_print.call_args_list]
@@ -231,7 +231,7 @@ def test_multiple_validation_retries() -> None:
         "   ",  # invalid name (whitespace) - attempt 2
         "Charlie Brown",  # valid name - attempt 3
         "Manager",
-        "555 Maple Dr, Coimbra",
+        "555 Maple Dr, Hilltown, USA",
         "charlie@example.com",
         "",  # empty phone (valid - optional)
         "",  # empty mobile (valid - optional)

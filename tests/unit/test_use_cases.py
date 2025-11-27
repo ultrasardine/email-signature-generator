@@ -33,12 +33,12 @@ def test_successful_signature_generation_flow() -> None:
     """
     # Given valid signature data
     signature_data = SignatureData(
-        name="João Silva",
+        name="John Smith",
         position="Software Engineer",
-        address="Lisbon, Portugal",
-        phone="351 123 456 789",
-        mobile="351 987 654 321",
-        email="joao.silva@example.com",
+        address="Anytown, USA",
+        phone="900000006",
+        mobile="900000007",
+        email="john.smith@example.com",
         website="www.example.com",
     )
 

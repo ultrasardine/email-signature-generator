@@ -28,11 +28,12 @@ valid_email = st.builds(
 )
 
 # Strategy for generating optional phone numbers (empty or valid format)
+# Using fictional 9-digit format starting with 900 (reserved for testing)
 optional_phone = st.one_of(
     st.just(""),
     st.builds(
-        lambda digits: f"+351 {digits[:3]} {digits[3:6]} {digits[6:9]}",
-        digits=st.text(alphabet="0123456789", min_size=9, max_size=9)
+        lambda num: f"900{num:06d}",
+        num=st.integers(min_value=0, max_value=999999)
     )
 )
 

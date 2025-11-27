@@ -353,12 +353,12 @@ The generated signature will be saved as `email_signature.png` in the current di
 ```
 === Email Signature Generator ===
 
-Enter your name: João Silva
+Enter your name: John Doe
 Enter your position: Software Engineer
-Enter your address: Lisbon, Portugal
-Enter phone number: +351 21 123 4567
-Enter mobile number: +351 91 234 5678
-Enter email: joao.silva@example.com
+Enter your address: Anytown, USA
+Enter phone number: +1 555 0100
+Enter mobile number: +1 555 0101
+Enter email: john.doe@example.com
 Enter website (or press Enter for default): www.example.com
 
 ✓ Signature generated successfully!

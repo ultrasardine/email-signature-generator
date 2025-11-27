@@ -36,4 +36,4 @@ signature:
       - "./logo/logo.jpg"
   
   text:
-    confidentiality: "CONFIDENCIALIDADE: Esta mensagem e qualquer ficheiro anexado destina-se exclusivamente ao uso do destinatário e podem conter informações confidenciais."
+    confidentiality: "CONFIDENTIALITY: This message is intended solely for the use of the addressee and may contain confidential information."

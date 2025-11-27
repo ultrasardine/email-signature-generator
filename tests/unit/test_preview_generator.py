@@ -25,9 +25,9 @@ def sample_signature_data():
     return SignatureData(
         name="John Doe",
         position="Software Engineer",
-        address="Lisbon, Portugal",
-        phone="+351 21 123 4567",
-        mobile="+351 91 234 5678",
+        address="Anytown, USA",
+        phone="900000008",
+        mobile="900000009",
         email="john.doe@example.com",
         website="www.example.com",
     )

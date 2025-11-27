@@ -71,8 +71,8 @@ class SignatureConfig:
 
     # Confidentiality text
     confidentiality_text: str = (
-        "CONFIDENCIALIDADE: Esta mensagem e qualquer ficheiro anexado destina-se "
-        "exclusivamente ao uso do destinatário e podem conter informações confidenciais."
+        "CONFIDENTIALITY: This message is intended solely for the use of the addressee "
+        "and may contain confidential information."
     )
 
 
