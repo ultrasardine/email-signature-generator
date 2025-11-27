@@ -1,0 +1,12 @@
+Initial commit: Email Signature Generator
+
+- GUI interface with Tkinter
+- CLI interface for automation
+- Profile management system
+- Live preview functionality
+- Cross-platform support (Windows, macOS, Linux)
+- Comprehensive testing (59 tests: unit + property-based)
+- Clean architecture with separation of concerns
+- Configuration management with YAML
+- Make-based development workflow
+- Full documentation and troubleshooting guide

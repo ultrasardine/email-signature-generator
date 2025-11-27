@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  email-signature:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: email-signature-generator:${VERSION:-latest}
+    container_name: email-signature-generator
+    volumes:
+      # Output directory for generated signatures
+      - ./output:/app/output
+      # Profile storage
+      - ./profiles:/app/profiles
+      # Custom configuration (read-only)
+      - ./config:/app/config:ro
+      # Custom logo (read-only)
+      - ./logo.png:/app/logo.png:ro
+    environment:
+      - OUTPUT_DIR=/app/output
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true
