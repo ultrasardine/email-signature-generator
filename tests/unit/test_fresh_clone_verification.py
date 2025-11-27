@@ -174,6 +174,10 @@ def test_fresh_clone_tests_directory_is_sanitized() -> None:
         tests_dir = clone_path / "tests"
         if tests_dir.exists():
             for test_file in tests_dir.rglob("*.py"):
+                # Skip the fresh clone verification test itself (it contains "+351" in assertions)
+                if test_file.name == "test_fresh_clone_verification.py":
+                    continue
+                    
                 content = test_file.read_text()
                 
                 # Should not contain Portuguese phone format
