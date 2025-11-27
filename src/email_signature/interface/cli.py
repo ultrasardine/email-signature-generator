@@ -79,9 +79,9 @@ class CLI:
         )
 
         # Collect website (optional)
-        website = input("Website (press Enter for default 'www.eos.pt'): ").strip()
+        website = input("Website (press Enter for default 'www.example.com'): ").strip()
         if not website:
-            website = "www.eos.pt"
+            website = "www.example.com"
 
         # Create and return SignatureData
         return SignatureData(

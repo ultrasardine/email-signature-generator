@@ -51,7 +51,7 @@ def test_collect_user_data_with_default_website() -> None:
     Validates: Requirements 1.7
 
     When user provides empty input for website, the CLI should
-    use the default value "www.eos.pt".
+    use the default value "www.example.com".
     """
     # Given a CLI instance
     validator = InputValidator()
@@ -73,7 +73,7 @@ def test_collect_user_data_with_default_website() -> None:
         result = cli.collect_user_data()
 
     # Then website should be the default value
-    assert result.website == "www.eos.pt"
+    assert result.website == "www.example.com"
 
 
 def test_collect_user_data_with_optional_fields_empty() -> None:
@@ -106,7 +106,7 @@ def test_collect_user_data_with_optional_fields_empty() -> None:
     # Then optional fields should be empty strings
     assert result.phone == ""
     assert result.mobile == ""
-    assert result.website == "www.eos.pt"
+    assert result.website == "www.example.com"
 
 
 def test_validation_error_handling_and_reentry() -> None:
