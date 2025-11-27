@@ -35,8 +35,7 @@ class PreviewGenerator:
 
         Args:
             data: Signature data to generate preview for
-            logo_path: Optional custom logo path (currently not used, 
-                      uses default logo search paths)
+            logo_path: Optional custom logo path to use instead of default
 
         Returns:
             PIL Image object containing the signature preview
@@ -49,6 +48,12 @@ class PreviewGenerator:
         # Create temporary file for preview using TempFileManager
         temp_path = TempFileManager.create_temp_file(suffix=".png", prefix="signature_preview_")
         logger.debug(f"Created temporary file: {temp_path}")
+
+        # If custom logo path provided, temporarily override logo loader
+        original_paths = None
+        if logo_path:
+            original_paths = self.use_case.logo_loader.search_paths
+            self.use_case.logo_loader.search_paths = [logo_path]
 
         try:
             # Generate signature to temp file
@@ -69,6 +74,10 @@ class PreviewGenerator:
                 except Exception as cleanup_error:
                     logger.warning(f"Failed to remove temporary file {temp_path}: {cleanup_error}")
             raise
+        finally:
+            # Restore original logo paths if we changed them
+            if original_paths is not None:
+                self.use_case.logo_loader.search_paths = original_paths
 
     def cleanup(self) -> None:
         """Clean up all temporary preview files.
