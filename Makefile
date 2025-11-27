@@ -45,7 +45,7 @@ TEST_PROPERTY_DIR := $(TEST_DIR)/property
 
 .PHONY: help install clean test test-unit test-property coverage
 .PHONY: lint lint-fix format format-check typecheck check
-.PHONY: run check-venv
+.PHONY: run run-gui check-venv
 
 # ============================================================================
 # Default Target
@@ -199,7 +199,11 @@ check: check-venv ## Run all quality checks (format-check, lint, typecheck)
 # Application Targets
 # ============================================================================
 
-run: check-venv ## Run the email signature generator
+run: check-venv ## Run the email signature generator (CLI)
 	@echo "Starting email signature generator..."
 	$(VENV_BIN)/python main.py
+
+run-gui: check-venv ## Run the email signature generator GUI
+	@echo "Starting email signature generator GUI..."
+	$(VENV_BIN)/python gui_main.py
 
