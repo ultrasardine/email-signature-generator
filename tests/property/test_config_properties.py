@@ -510,3 +510,52 @@ def test_configuration_round_trip_preserves_data(
         # Clean up temporary file
         if temp_path and temp_path.exists():
             temp_path.unlink(missing_ok=True)
+
+
+@given(
+    element_order=st.permutations([
+        "logo",
+        "name",
+        "position",
+        "address",
+        "phone",
+        "email",
+        "separator",
+        "confidentiality",
+    ])
+)
+def test_element_order_persistence_round_trip(element_order: list[str]) -> None:
+    """Feature: gui-settings-preview, Property 6: Element order persistence round-trip.
+
+    Validates: Requirements 2.5, 2.6
+
+    For any element order configuration, saving and then loading the configuration
+    SHALL preserve the element order.
+    """
+    temp_path = None
+
+    try:
+        # Create a SignatureConfig with the given element order
+        config = SignatureConfig()
+        config.element_order = list(element_order)
+
+        # Create temporary file path
+        temp_dir = Path(tempfile.gettempdir())
+        temp_path = temp_dir / f"test_element_order_{hash(tuple(element_order))}.yaml"
+
+        # Save the configuration
+        ConfigLoader.save(config, str(temp_path))
+
+        # Load the configuration back
+        loaded_config = ConfigLoader.load(str(temp_path))
+
+        # Verify element order is preserved
+        assert loaded_config.element_order == list(element_order), (
+            f"Element order not preserved. Expected {list(element_order)}, "
+            f"got {loaded_config.element_order}"
+        )
+
+    finally:
+        # Clean up temporary file
+        if temp_path and temp_path.exists():
+            temp_path.unlink(missing_ok=True)

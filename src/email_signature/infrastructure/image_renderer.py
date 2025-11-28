@@ -233,12 +233,12 @@ class ImageRenderer:
             logo_margin_right = self.config.logo_margin_right
             line_height = self.config.line_height
 
-            # Get colors
-            outline_color = self.config.colors["outline"]
-            name_color = self.config.colors["name"]
-            details_color = self.config.colors["details"]
-            separator_color = self.config.colors["separator"]
-            confidentiality_color = self.config.colors["confidentiality"]
+            # Get colors from current config (ensures we use updated values)
+            outline_color = self.config.colors.get("outline", (255, 255, 255))
+            name_color = self.config.colors.get("name", (51, 51, 51))
+            details_color = self.config.colors.get("details", (100, 100, 100))
+            separator_color = self.config.colors.get("separator", (200, 0, 40, 200))
+            confidentiality_color = self.config.colors.get("confidentiality", (150, 150, 150))
 
             # Get fonts
             bold_font = self.fonts["bold"]
@@ -263,30 +263,27 @@ class ImageRenderer:
             name_bbox = temp_draw.textbbox((0, 0), signature_data.name, font=bold_font)
             name_width = name_bbox[2] - name_bbox[0]
 
-            # Measure other text lines
-            text_lines = [
-                signature_data.position,
-                signature_data.address,
-            ]
+            # Prepare element content mapping
+            phone_line = self._build_phone_line(signature_data)
+            email_line = f"{signature_data.email} | {signature_data.website}"
 
-            # Add phone numbers if provided
-            phone_parts = []
-            if signature_data.phone:
-                phone_parts.append(f"Tel: {signature_data.phone}")
-            if signature_data.mobile:
-                phone_parts.append(f"Tlm: {signature_data.mobile}")
-            if phone_parts:
-                text_lines.append(" | ".join(phone_parts))
+            # Map element IDs to their content and rendering properties
+            element_content = {
+                "name": signature_data.name,
+                "position": signature_data.position,
+                "address": signature_data.address,
+                "phone": phone_line,
+                "email": email_line,
+            }
 
-            # Add email and website
-            text_lines.append(f"{signature_data.email} | {signature_data.website}")
-
-            # Measure max text width
+            # Measure max text width for all text elements
             max_text_width = name_width
-            for line in text_lines:
-                bbox = temp_draw.textbbox((0, 0), line, font=regular_font)
-                line_width = bbox[2] - bbox[0]
-                max_text_width = max(max_text_width, line_width)
+            for element_id in ["position", "address", "phone", "email"]:
+                content = element_content.get(element_id, "")
+                if content:
+                    bbox = temp_draw.textbbox((0, 0), content, font=regular_font)
+                    line_width = bbox[2] - bbox[0]
+                    max_text_width = max(max_text_width, line_width)
 
             # Measure confidentiality notice
             conf_bbox = temp_draw.textbbox(
@@ -301,14 +298,28 @@ class ImageRenderer:
             # Image width should accommodate logo + text + margins
             image_width = int(text_x + max(max_text_width, conf_width) + margin)
 
+            # Get element order from config, with fallback to default
+            element_order = getattr(self.config, 'element_order', None)
+            if not element_order:
+                element_order = [
+                    "logo", "name", "position", "address",
+                    "phone", "email", "separator", "confidentiality"
+                ]
+
+            # Count text elements for height calculation
+            text_element_count = sum(
+                1 for e in element_order
+                if e in element_content and element_content.get(e)
+            )
+            has_separator = "separator" in element_order
+            has_confidentiality = "confidentiality" in element_order
+
             # Calculate height needed for all elements
-            # Logo height + margins, or text height + margins, whichever is larger
             text_height = (
                 margin  # top margin
-                + line_height  # name
-                + line_height * len(text_lines)  # other text lines
-                + line_height  # separator space
-                + line_height * 2  # confidentiality notice (may wrap)
+                + line_height * text_element_count  # text lines
+                + (line_height if has_separator else 0)  # separator space
+                + (line_height * 2 if has_confidentiality else 0)  # confidentiality notice
                 + margin  # bottom margin
             )
 
@@ -319,56 +330,109 @@ class ImageRenderer:
             image = Image.new("RGBA", (image_width, image_height), (0, 0, 0, 0))
             draw = ImageDraw.Draw(image)
 
-            # Position and paste logo
-            logo_y = margin
-            image.paste(logo, (margin, logo_y), logo)
-
-            # Render name with bold font and outline
+            # Render elements in the specified order
             y_position = margin
-            self.draw_text_with_outline(
-                draw,
-                signature_data.name,
-                (text_x, y_position),
-                bold_font,
-                outline_color,
-                name_color,
-                self.config.outline_width_name,
-            )
+            logo_rendered = False
 
-            # Render other text lines with regular font
-            y_position += line_height
-            for line in text_lines:
-                self.draw_text_with_outline(
-                    draw,
-                    line,
-                    (text_x, y_position),
-                    regular_font,
-                    outline_color,
-                    details_color,
-                    self.config.outline_width_text,
-                )
-                y_position += line_height
-
-            # Draw separator line
-            y_position += int(line_height * 0.3)
-            separator_start = (text_x, y_position)
-            separator_end = (text_x + max_text_width, y_position)
-            draw.line([separator_start, separator_end], fill=separator_color, width=2)
-
-            # Render confidentiality notice at bottom
-            y_position += int(line_height * 0.7)
-            self.draw_text_with_outline(
-                draw,
-                self.config.confidentiality_text,
-                (text_x, y_position),
-                small_font,
-                outline_color,
-                confidentiality_color,
-                self.config.outline_width_text,
-            )
+            for element_id in element_order:
+                # Handle missing elements gracefully
+                if element_id == "logo":
+                    if not logo_rendered:
+                        image.paste(logo, (margin, margin), logo)
+                        logo_rendered = True
+                elif element_id == "name":
+                    self.draw_text_with_outline(
+                        draw,
+                        signature_data.name,
+                        (text_x, y_position),
+                        bold_font,
+                        outline_color,
+                        name_color,
+                        self.config.outline_width_name,
+                    )
+                    y_position += line_height
+                elif element_id == "position":
+                    self.draw_text_with_outline(
+                        draw,
+                        signature_data.position,
+                        (text_x, y_position),
+                        regular_font,
+                        outline_color,
+                        details_color,
+                        self.config.outline_width_text,
+                    )
+                    y_position += line_height
+                elif element_id == "address":
+                    self.draw_text_with_outline(
+                        draw,
+                        signature_data.address,
+                        (text_x, y_position),
+                        regular_font,
+                        outline_color,
+                        details_color,
+                        self.config.outline_width_text,
+                    )
+                    y_position += line_height
+                elif element_id == "phone":
+                    if phone_line:
+                        self.draw_text_with_outline(
+                            draw,
+                            phone_line,
+                            (text_x, y_position),
+                            regular_font,
+                            outline_color,
+                            details_color,
+                            self.config.outline_width_text,
+                        )
+                        y_position += line_height
+                elif element_id == "email":
+                    self.draw_text_with_outline(
+                        draw,
+                        email_line,
+                        (text_x, y_position),
+                        regular_font,
+                        outline_color,
+                        details_color,
+                        self.config.outline_width_text,
+                    )
+                    y_position += line_height
+                elif element_id == "separator":
+                    y_position += int(line_height * 0.3)
+                    separator_start = (text_x, y_position)
+                    separator_end = (text_x + max_text_width, y_position)
+                    draw.line([separator_start, separator_end], fill=separator_color, width=2)
+                    y_position += int(line_height * 0.7)
+                elif element_id == "confidentiality":
+                    self.draw_text_with_outline(
+                        draw,
+                        self.config.confidentiality_text,
+                        (text_x, y_position),
+                        small_font,
+                        outline_color,
+                        confidentiality_color,
+                        self.config.outline_width_text,
+                    )
+                    y_position += line_height
+                # Unknown elements are silently ignored (handle missing elements gracefully)
 
             return image
 
         except Exception as e:
             logger.error(f"Failed to render signature image: {e}")
             raise ImageRenderError(f"Failed to render signature image: {e}") from e
+
+    def _build_phone_line(self, signature_data: SignatureData) -> str:
+        """Build the phone line from signature data.
+
+        Args:
+            signature_data: User data for the signature
+
+        Returns:
+            Formatted phone line or empty string if no phone numbers
+        """
+        phone_parts = []
+        if signature_data.phone:
+            phone_parts.append(f"Tel: {signature_data.phone}")
+        if signature_data.mobile:
+            phone_parts.append(f"Tlm: {signature_data.mobile}")
+        return " | ".join(phone_parts) if phone_parts else ""

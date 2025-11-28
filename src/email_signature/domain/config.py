@@ -18,6 +18,7 @@ class SignatureConfig:
         colors: Color definitions for various elements
         logo_search_paths: Paths to search for logo files
         confidentiality_text: Legal confidentiality notice text
+        element_order: Order of signature elements for layout customization
     """
 
     # Dimensions
@@ -73,6 +74,20 @@ class SignatureConfig:
     confidentiality_text: str = (
         "CONFIDENTIALITY: This message is intended solely for the use of the addressee "
         "and may contain confidential information."
+    )
+
+    # Element order for signature layout
+    element_order: list[str] = field(
+        default_factory=lambda: [
+            "logo",
+            "name",
+            "position",
+            "address",
+            "phone",
+            "email",
+            "separator",
+            "confidentiality",
+        ]
     )
 
 
@@ -192,6 +207,15 @@ class ConfigLoader:
                 if isinstance(conf_text, str):
                     config.confidentiality_text = conf_text
 
+            # Load element order
+            layout = sig_data.get("layout", {})
+            if isinstance(layout, dict):
+                element_order = layout.get("element_order")
+                if isinstance(element_order, list) and element_order:
+                    # Validate that all elements are strings
+                    if all(isinstance(e, str) for e in element_order):
+                        config.element_order = element_order
+
             return config
 
         except Exception:
@@ -242,6 +266,9 @@ class ConfigLoader:
                 },
                 "text": {
                     "confidentiality": config.confidentiality_text,
+                },
+                "layout": {
+                    "element_order": config.element_order,
                 },
             }
         }

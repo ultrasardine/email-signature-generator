@@ -3,8 +3,10 @@
 A professional email signature generator that creates PNG images with transparent backgrounds and outlined text for optimal readability in both light and dark mode email clients.
 
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Cross-Platform Tests](https://img.shields.io/github/actions/workflow/status/yourusername/email-signature-generator/cross-platform-tests.yml?label=Cross-Platform%20Tests)](https://github.com/yourusername/email-signature-generator/actions)
+[![codecov](https://codecov.io/gh/yourusername/email-signature-generator/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/email-signature-generator)
 
 ## ✨ Features
 
@@ -16,6 +18,7 @@ A professional email signature generator that creates PNG images with transparen
 - **💾 Profile Management**: Save and load multiple signature profiles for different users or roles
 - **👁️ Live Preview**: See your signature before generating with automatic updates
 - **⚙️ Configurable**: Externalized configuration for fonts, colors, dimensions, and paths
+- **🎨 Modern Design System**: Professional, accessible interface with WCAG AA compliant colors and consistent styling
 - **🏗️ Clean Architecture**: Well-organized codebase following clean architecture principles
 - **🧪 Comprehensive Testing**: Includes both unit tests and property-based tests for reliability
 - **🌍 Cross-Platform**: Works seamlessly on Windows, macOS, and Linux
@@ -29,12 +32,16 @@ The application features a modern, user-friendly interface with:
 - Profile management for multiple users
 - Customizable settings
 
+![GUI Screenshot](docs/images/gui-screenshot.png)
+
 ### Example Output
 Generated signatures include:
 - Professional layout with company logo
 - Clear, readable text with outlines
 - Transparent background for any email client
 - Properly formatted contact information
+
+![Signature Example](docs/images/signature-example.png)
 
 ## 🚀 Quick Start
 
@@ -858,11 +865,36 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Testing with [pytest](https://pytest.org/) and [Hypothesis](https://hypothesis.readthedocs.io/)
 - Configuration with [PyYAML](https://pyyaml.org/)
 
+## 🐳 Docker Usage
+
+Run the application using Docker:
+
+```bash
+# Build the Docker image
+docker build -t email-signature-generator .
+
+# Run the container
+docker run -it --rm -v $(pwd)/output:/app/output email-signature-generator
+
+# Or use docker-compose
+docker-compose up
+```
+
 ## 📞 Support
 
 - **Documentation**: See this README and [MANUAL_TESTING_GUIDE.md](MANUAL_TESTING_GUIDE.md)
 - **Issues**: [GitHub Issues](https://github.com/yourusername/email-signature-generator/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/yourusername/email-signature-generator/discussions)
+
+## 👥 Contributors
+
+We value all contributors who help make this project better! Whether you've submitted a bug report, suggested a feature, or contributed code, your help is appreciated.
+
+<!-- ALL-CONTRIBUTORS-LIST:START -->
+Thanks goes to these wonderful people who have contributed to this project.
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+See the [contributor graph](https://github.com/yourusername/email-signature-generator/graphs/contributors) for a full list of contributors.
 
 ## ⭐ Star History
 

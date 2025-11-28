@@ -46,6 +46,7 @@ TEST_PROPERTY_DIR := $(TEST_DIR)/property
 .PHONY: help install clean test test-unit test-property coverage
 .PHONY: lint lint-fix format format-check typecheck check
 .PHONY: run run-gui check-venv
+.PHONY: build-windows build-macos build-linux build-all docker-build
 
 # ============================================================================
 # Default Target
@@ -207,4 +208,35 @@ run: check-venv ## Run the email signature generator (CLI)
 run-gui: check-venv ## Run the email signature generator GUI
 	@echo "Starting email signature generator GUI..."
 	$(VENV_BIN)/python gui_main.py
+
+# ============================================================================
+# Build Targets
+# ============================================================================
+
+build-windows: check-venv ## Build Windows executable
+	@echo "Building Windows executable..."
+	$(VENV_BIN)/pyinstaller build/pyinstaller/email-signature.spec --distpath dist/windows
+	$(VENV_BIN)/pyinstaller build/pyinstaller/email-signature-gui.spec --distpath dist/windows
+
+build-macos: check-venv ## Build macOS application
+	@echo "Building macOS application..."
+	$(VENV_BIN)/pyinstaller build/pyinstaller/email-signature.spec --distpath dist/macos
+	$(VENV_BIN)/pyinstaller build/pyinstaller/email-signature-gui.spec --distpath dist/macos
+
+build-linux: check-venv ## Build Linux executable
+	@echo "Building Linux executable..."
+	$(VENV_BIN)/pyinstaller build/pyinstaller/email-signature.spec --distpath dist/linux
+	$(VENV_BIN)/pyinstaller build/pyinstaller/email-signature-gui.spec --distpath dist/linux
+
+build-all: build-windows build-macos build-linux ## Build for all platforms
+	@echo "All platform builds complete!"
+
+# ============================================================================
+# Docker Targets
+# ============================================================================
+
+docker-build: ## Build Docker image with version tagging
+	@echo "Building Docker image..."
+	$(eval VERSION := $(shell $(VENV_BIN)/python -c "from src.email_signature.__version__ import __version__; print(__version__)"))
+	docker build -t email-signature-generator:$(VERSION) -t email-signature-generator:latest .
 

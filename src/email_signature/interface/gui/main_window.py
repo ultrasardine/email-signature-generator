@@ -9,6 +9,8 @@ if TYPE_CHECKING:
     from ...domain.config import SignatureConfig
     from ...domain.validators import InputValidator
 
+from ...__version__ import __version__
+
 logger = logging.getLogger(__name__)
 
 
@@ -78,17 +80,21 @@ class MainWindow:
         """
         import tkinter as tk
 
+        from .config_state import ConfigState
+        from .design_system import DesignSystem
+        from .theme_manager import ThemeManager
+
         self.config = config
         self.validator = validator
         self.use_case = use_case
 
         # Create root window
         self.root = tk.Tk()
-        self.root.title("Email Signature Generator")
+        self.root.title(f"Email Signature Generator v{__version__}")
 
         # Set window size and position
-        window_width = 800
-        window_height = 600
+        window_width = 900
+        window_height = 800
 
         # Center window on screen
         screen_width = self.root.winfo_screenwidth()
@@ -99,6 +105,18 @@ class MainWindow:
 
         # Set minimum size
         self.root.minsize(600, 400)
+
+        # Apply design system background color to root window
+        self.root.configure(bg=DesignSystem.colors.background)
+
+        # Initialize theme manager to apply design system styling
+        self.theme_manager = ThemeManager(self.root)
+
+        # Create shared config state with root for debouncing
+        self.config_state = ConfigState(config, root=self.root)
+
+        # Update use_case to reference shared config
+        self.use_case.config = self.config_state.config
 
         # Configure close handler
         self.root.protocol("WM_DELETE_WINDOW", self._on_closing)
@@ -111,8 +129,12 @@ class MainWindow:
     def _setup_ui(self) -> None:
         """Set up the main user interface."""
         from tkinter import ttk
-        from .signature_tab import SignatureTab
+
+        from .design_system import DesignSystem
         from .settings_tab import SettingsTab
+        from .signature_tab import SignatureTab
+
+        ds = DesignSystem
 
         # Configure root grid
         self.root.columnconfigure(0, weight=1)
@@ -120,19 +142,20 @@ class MainWindow:
         self.root.rowconfigure(1, weight=1)  # Main content
         self.root.rowconfigure(2, weight=0)  # Status bar
 
-        # Header frame
-        header_frame = ttk.Frame(self.root, padding="10")
+        # Header frame with design system spacing
+        header_frame = ttk.Frame(self.root, padding=ds.spacing.md)
         header_frame.grid(row=0, column=0, sticky="ew")
 
+        # Title label using Heading.TLabel style
         title_label = ttk.Label(
             header_frame,
             text="Email Signature Generator",
-            font=("Helvetica", 16, "bold")
+            style="Heading.TLabel"
         )
         title_label.pack()
 
-        # Main content frame with notebook
-        self.main_frame = ttk.Frame(self.root, padding="10")
+        # Main content frame with notebook using design system spacing
+        self.main_frame = ttk.Frame(self.root, padding=ds.spacing.md)
         self.main_frame.grid(row=1, column=0, sticky="nsew")
         self.main_frame.columnconfigure(0, weight=1)
         self.main_frame.rowconfigure(0, weight=1)
@@ -141,34 +164,36 @@ class MainWindow:
         self.notebook = ttk.Notebook(self.main_frame)
         self.notebook.grid(row=0, column=0, sticky="nsew")
 
-        # Create SignatureTab
+        # Create SignatureTab with config_state
         self.signature_tab = SignatureTab(
             parent=self.notebook,
-            config=self.config,
+            config=self.config_state,
             validator=self.validator,
             use_case=self.use_case
         )
-        
+
         # Add SignatureTab to notebook
         self.notebook.add(self.signature_tab.frame, text="Signature")
 
-        # Create SettingsTab
+        # Create SettingsTab with config_state
         self.settings_tab = SettingsTab(
             parent=self.notebook,
-            config=self.config
+            config_state=self.config_state
         )
-        
+
         # Add SettingsTab to notebook
         self.notebook.add(self.settings_tab.frame, text="Settings")
 
-        # Status bar
-        self.status_frame = ttk.Frame(self.root, padding="5")
+        # Status bar with design system spacing
+        self.status_frame = ttk.Frame(self.root, padding=ds.spacing.sm)
         self.status_frame.grid(row=2, column=0, sticky="ew")
 
+        # Status label using Secondary.TLabel style
         self.status_label = ttk.Label(
             self.status_frame,
             text="Ready",
-            anchor="w"
+            anchor="w",
+            style="Secondary.TLabel"
         )
         self.status_label.pack(fill="x")
 
@@ -184,13 +209,13 @@ class MainWindow:
     def _on_closing(self) -> None:
         """Handle window close event."""
         from ...infrastructure.platform_utils import TempFileManager
-        
+
         logger.info("Closing application")
 
         # Clean up signature tab resources (preview temp files)
         if hasattr(self, 'signature_tab'):
             self.signature_tab.cleanup()
-        
+
         # Clean up any remaining temporary files using TempFileManager
         TempFileManager.cleanup_temp_files()
 

@@ -26,15 +26,17 @@ class TestCLIEntryPoint:
         with patch.object(
             DependencyChecker, 'check_all_dependencies', return_value=(False, ["Missing Pillow"])
         ):
-            # Import main after patching
-            from main import main
+            # Mock sys.argv to avoid --version triggering early exit
+            with patch.object(sys, 'argv', ['main.py']):
+                # Import main after patching
+                from main import main
 
-            # When running the CLI entry point with missing dependencies
-            with pytest.raises(SystemExit) as exc_info:
-                main()
+                # When running the CLI entry point with missing dependencies
+                with pytest.raises(SystemExit) as exc_info:
+                    main()
 
-            # Then it should exit with error code 1
-            assert exc_info.value.code == 1
+                # Then it should exit with error code 1
+                assert exc_info.value.code == 1
 
     def test_cli_entry_point_runs_with_dependencies(self) -> None:
         """Test that CLI entry point runs when dependencies are available.
@@ -61,23 +63,25 @@ class TestCLIEntryPoint:
 
         Validates: Requirements 5.1, 5.2
         """
-        # Mock the dependency checker
-        with patch.object(DependencyChecker, 'check_all_dependencies', return_value=(True, [])):
-            # Mock the CLI to raise KeyboardInterrupt
-            with patch('main.CLI') as mock_cli_class:
-                mock_cli = MagicMock()
-                mock_cli_class.return_value = mock_cli
-                mock_cli.collect_user_data.side_effect = KeyboardInterrupt()
+        # Mock sys.argv to avoid argument parsing issues
+        with patch.object(sys, 'argv', ['main.py']):
+            # Mock the dependency checker
+            with patch.object(DependencyChecker, 'check_all_dependencies', return_value=(True, [])):
+                # Mock the CLI to raise KeyboardInterrupt
+                with patch('main.CLI') as mock_cli_class:
+                    mock_cli = MagicMock()
+                    mock_cli_class.return_value = mock_cli
+                    mock_cli.collect_user_data.side_effect = KeyboardInterrupt()
 
-                # Import main
-                from main import main
+                    # Import main
+                    from main import main
 
-                # When running the CLI entry point and user interrupts
-                with pytest.raises(SystemExit) as exc_info:
-                    main()
+                    # When running the CLI entry point and user interrupts
+                    with pytest.raises(SystemExit) as exc_info:
+                        main()
 
-                # Then it should exit with code 0 (graceful exit)
-                assert exc_info.value.code == 0
+                    # Then it should exit with code 0 (graceful exit)
+                    assert exc_info.value.code == 0
 
 
 @pytest.mark.gui

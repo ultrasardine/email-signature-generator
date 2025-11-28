@@ -1,8 +1,6 @@
 """Preview generator for signature images."""
 
 import logging
-from pathlib import Path
-from typing import Optional
 
 from PIL import Image
 
@@ -26,7 +24,7 @@ class PreviewGenerator:
         logger.info("PreviewGenerator initialized")
 
     def generate_preview(
-        self, data: SignatureData, logo_path: Optional[str] = None
+        self, data: SignatureData, logo_path: str | None = None
     ) -> Image.Image:
         """Generate a preview image for the signature.
 
@@ -35,8 +33,7 @@ class PreviewGenerator:
 
         Args:
             data: Signature data to generate preview for
-            logo_path: Optional custom logo path (currently not used, 
-                      uses default logo search paths)
+            logo_path: Optional custom logo path to use instead of default
 
         Returns:
             PIL Image object containing the signature preview
@@ -51,8 +48,16 @@ class PreviewGenerator:
         logger.debug(f"Created temporary file: {temp_path}")
 
         try:
-            # Generate signature to temp file
-            self.use_case.execute(data, str(temp_path))
+            # If custom logo path provided, temporarily override logo loader
+            if logo_path:
+                original_paths = self.use_case.logo_loader.search_paths
+                self.use_case.logo_loader.search_paths = [logo_path]
+                try:
+                    self.use_case.execute(data, str(temp_path))
+                finally:
+                    self.use_case.logo_loader.search_paths = original_paths
+            else:
+                self.use_case.execute(data, str(temp_path))
             logger.info(f"Preview generated successfully at {temp_path}")
 
             # Load and return as PIL Image
@@ -79,10 +84,10 @@ class PreviewGenerator:
         # Get count of tracked files before cleanup
         tracked_files = TempFileManager.get_tracked_files()
         preview_files = [f for f in tracked_files if f.name.startswith("signature_preview_")]
-        
+
         logger.info(f"Cleaning up {len(preview_files)} temporary preview files")
 
         # Clean up only preview files (those with signature_preview_ prefix)
         TempFileManager.cleanup_temp_files(pattern="signature_preview_*")
-        
+
         logger.info("Cleanup completed")

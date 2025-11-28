@@ -5,10 +5,12 @@ This module initializes all dependencies, sets up logging, and orchestrates
 the signature generation process through the CLI interface.
 """
 
+import argparse
 import logging
 import sys
 from pathlib import Path
 
+from src.email_signature.__version__ import __version__
 from src.email_signature.application.use_cases import GenerateSignatureUseCase
 from src.email_signature.domain.config import ConfigLoader
 from src.email_signature.domain.exceptions import (
@@ -39,6 +41,18 @@ def setup_logging() -> None:
 
 def main() -> None:
     """Main entry point for the email signature generator."""
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(
+        prog="email-signature",
+        description="Professional email signature generator"
+    )
+    parser.add_argument(
+        "--version", "-v",
+        action="version",
+        version=f"%(prog)s {__version__}"
+    )
+    parser.parse_args()
+
     # Set up logging
     setup_logging()
     logger = logging.getLogger(__name__)

@@ -13,8 +13,9 @@ from hypothesis import strategies as st
 
 
 # Define patterns for identifying PII in documentation
-PORTUGUESE_PHONE_PATTERN = re.compile(r'\+351\s*\d{2}\s*\d{3}\s*\d{4}')
-PORTUGUESE_MOBILE_PATTERN = re.compile(r'\+351\s*9[1-9]\s*\d{3}\s*\d{4}')
+# Note: These patterns detect non-US phone formats that should be sanitized
+NON_GENERIC_PHONE_PATTERN = re.compile(r'\+3\d{2}\s*\d{2}\s*\d{3}\s*\d{4}')
+NON_GENERIC_MOBILE_PATTERN = re.compile(r'\+3\d{2}\s*9[1-9]\s*\d{3}\s*\d{4}')
 PORTUGUESE_NAME_PATTERN = re.compile(r'\bJoão\b|\bSilva\b|\bJoão Silva\b', re.IGNORECASE)
 LISBON_ADDRESS_PATTERN = re.compile(r'\bLisbon\b|\bLisboa\b', re.IGNORECASE)
 PORTUGAL_PATTERN = re.compile(r'\bPortugal\b', re.IGNORECASE)
@@ -48,13 +49,13 @@ def check_file_for_pii(file_path: Path) -> Tuple[bool, List[str]]:
     try:
         content = file_path.read_text(encoding='utf-8')
         
-        # Check for Portuguese phone numbers
-        if PORTUGUESE_PHONE_PATTERN.search(content):
-            violations.append(f"Portuguese phone number found in {file_path.name}")
+        # Check for non-generic phone numbers
+        if NON_GENERIC_PHONE_PATTERN.search(content):
+            violations.append(f"Non-generic phone number found in {file_path.name}")
         
-        # Check for Portuguese mobile numbers
-        if PORTUGUESE_MOBILE_PATTERN.search(content):
-            violations.append(f"Portuguese mobile number found in {file_path.name}")
+        # Check for non-generic mobile numbers
+        if NON_GENERIC_MOBILE_PATTERN.search(content):
+            violations.append(f"Non-generic mobile number found in {file_path.name}")
         
         # Check for Portuguese names
         if PORTUGUESE_NAME_PATTERN.search(content):

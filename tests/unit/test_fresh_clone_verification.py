@@ -180,9 +180,11 @@ def test_fresh_clone_tests_directory_is_sanitized() -> None:
                     
                 content = test_file.read_text()
                 
-                # Should not contain Portuguese phone format
-                assert "+351" not in content, (
-                    f"Test file {test_file.name} still contains Portuguese phone numbers"
+                # Should not contain non-generic European phone formats (e.g., +351, +34, +33)
+                import re
+                non_generic_phone = re.search(r'\+3\d{2}\s*\d', content)
+                assert non_generic_phone is None, (
+                    f"Test file {test_file.name} still contains non-generic phone numbers"
                 )
                 
                 # Check emails use example.com

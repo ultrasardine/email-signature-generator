@@ -96,12 +96,14 @@ def test_validation_triggers_on_input_change(value: str) -> None:
             assert test_helper._validation_labels[entry].cget("text") == error_message
         
         # Verify the widget's visual state changed
-        # For invalid: should have light red background
-        # For valid: should have light green background
+        # For invalid: should have light red background (error_light from design system)
+        # For valid: should have light green background (success_light from design system)
+        from src.email_signature.interface.gui.design_system import DesignSystem
+        ds = DesignSystem
         if not is_valid:
-            assert entry.cget("background") == "#ffebee"  # Light red
+            assert entry.cget("background") == ds.colors.error_light
         else:
-            assert entry.cget("background") == "#e8f5e9"  # Light green
+            assert entry.cget("background") == ds.colors.success_light
             
     finally:
         # Clean up
@@ -154,15 +156,17 @@ def test_invalid_email_detection(email: str) -> None:
         assert email_entry in test_helper._validation_labels
         error_label = test_helper._validation_labels[email_entry]
         
-        # Verify error label has red text (convert color object to string)
+        # Verify error label has error text color from design system
+        from src.email_signature.interface.gui.design_system import DesignSystem
+        ds = DesignSystem
         foreground_color = str(error_label.cget("foreground"))
-        assert foreground_color == "red"
+        assert foreground_color == ds.colors.error_text
         
         # Verify error message is displayed
         assert error_label.cget("text") == error_message
         
-        # Verify widget has invalid visual state (light red background)
-        assert email_entry.cget("background") == "#ffebee"
+        # Verify widget has invalid visual state (error_light from design system)
+        assert email_entry.cget("background") == ds.colors.error_light
         
     finally:
         # Clean up
@@ -215,15 +219,17 @@ def test_invalid_phone_detection(phone: str) -> None:
         assert phone_entry in test_helper._validation_labels
         error_label = test_helper._validation_labels[phone_entry]
         
-        # Verify error label has red text (convert color object to string)
+        # Verify error label has error text color from design system
+        from src.email_signature.interface.gui.design_system import DesignSystem
+        ds = DesignSystem
         foreground_color = str(error_label.cget("foreground"))
-        assert foreground_color == "red"
+        assert foreground_color == ds.colors.error_text
         
         # Verify error message is displayed
         assert error_label.cget("text") == error_message
         
-        # Verify widget has invalid visual state (light red background)
-        assert phone_entry.cget("background") == "#ffebee"
+        # Verify widget has invalid visual state (error_light from design system)
+        assert phone_entry.cget("background") == ds.colors.error_light
         
     finally:
         # Clean up
@@ -240,8 +246,8 @@ valid_signature_data = st.fixed_dictionaries({
     "position": st.text(min_size=1).filter(lambda s: s.strip()),
     "address": st.text(min_size=1).filter(lambda s: s.strip()),
     "email": st.from_regex(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", fullmatch=True),
-    "phone": st.one_of(st.just(""), st.from_regex(r"^\+?351\s?\d{3}\s?\d{3}\s?\d{3}$", fullmatch=True)),
-    "mobile": st.one_of(st.just(""), st.from_regex(r"^\+?351\s?\d{3}\s?\d{3}\s?\d{3}$", fullmatch=True)),
+    "phone": st.one_of(st.just(""), st.from_regex(r"^\+1\s?555\s?\d{3}\s?\d{4}$", fullmatch=True)),
+    "mobile": st.one_of(st.just(""), st.from_regex(r"^\+1\s?555\s?\d{3}\s?\d{4}$", fullmatch=True)),
     "website": st.text(),
 })
 
@@ -331,6 +337,10 @@ def test_generate_button_enabled_with_valid_data(data: dict) -> None:
         # Create the signature tab
         tab = SignatureTab(root, config, validator, use_case)
         
+        # Disable auto-update preview to avoid threading issues with PIL
+        tab.auto_update_preview = False
+        tab.auto_update_var.set(False)
+        
         # Set all field values
         for field_name, value in data.items():
             if field_name in tab.field_vars:
@@ -398,6 +408,10 @@ def test_generate_button_disabled_with_invalid_data(data: dict) -> None:
         
         # Create the signature tab
         tab = SignatureTab(root, config, validator, use_case)
+        
+        # Disable auto-update preview to avoid threading issues with PIL
+        tab.auto_update_preview = False
+        tab.auto_update_var.set(False)
         
         # Set all field values
         for field_name, value in data.items():
